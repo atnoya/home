@@ -74,6 +74,9 @@ Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
 " NeoComplete
 Plug 'shougo/neocomplete.vim'
 
+" Other plugins
+Plug 'plasticboy/vim-markdown'
+
 " All of your Plugins must be added before the following line
 call plug#end()            " required
 
