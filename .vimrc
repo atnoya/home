@@ -1,12 +1,9 @@
 set nocompatible              " be iMproved, required
-" filetype off                  " required
+filetype off                  " required
 
-" set the runtime path to include Vundle and initialize
-" set rtp+=~/.vim/bundle/Vundle.vim
+"set the runtime path to include Vundle and initialize
+set rtp+=~/.vim/bundle/Vundle.vim
 call plug#begin('~/.vim/plugged')
-
-" let Vundle manage Vundle, required
-Plug 'gmarik/Vundle.vim'
 
 " Keep Plug commands between vundle#begin/end.
 " plugin on GitHub repo
@@ -33,16 +30,15 @@ Plug 'reedes/vim-colors-pencil'
 
 " Automatic closing brackets, parenthesis...
 Plug 'Raimondi/delimitMate'
-Plug 'tpope/vim-surround'
 
 " Quickness tools
 Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-commentary'
+Plug 'tpope/vim-surround'
 
-Plug 'godlygeek/tabular'
 Plug 'mhinz/vim-signify'
 Plug 'ekalinin/Dockerfile.vim'
- 
+
 " UltiSnips y vimSnippets
 Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
@@ -57,17 +53,23 @@ Plug 'svermeulen/vim-easyclip'
 Plug 'majutsushi/tagbar'
 
 " Scala
-Plug 'derekwyatt/vim-scala'
-Plug 'ensime/ensime-vim'
+Plug 'derekwyatt/vim-scala', { 'for': 'scala'}
+Plug 'ensime/ensime-vim', { 'for': 'scala'}
 
 " Worksheets
 Plug 'HerringtonDarkholme/vim-worksheet'
 
 " NERD
-Plug 'scrooloose/nerdtree.git'
+Plug 'scrooloose/nerdtree'
 
 " BufferGator
 Plug 'jeetsukumaran/vim-buffergator'
+
+" Deoplete for neovim
+function! DoRemote(arg)
+  UpdateRemotePlugins
+endfunction
+Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
 
 " NeoComplete
 Plug 'shougo/neocomplete.vim'
@@ -362,34 +364,25 @@ let g:ctrlp_switch_buffer = 1
 let g:ctrlp_extensions = ['tag', 'buffertag', 'mixed']
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
-" NeoComplete
+" Deoplete
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
+let g:deoplete#enable_at_startup = 1
+let g:deoplete#enable_camel_case = 1
+let g:deoplete#enable_smart_case = 1
+let g:deoplete#enable_auto_select = 1
 
-let g:acp_enableAtStartup = 0
-" Use neocomplete.
-let g:neocomplete#enable_at_startup = 1
-" Use smartcase.
-let g:neocomplete#enable_smart_case = 1
-" Set minimum syntax keyword length.
-let g:neocomplete#sources#syntax#min_keyword_length = 3
-let g:neocomplete#lock_buffer_name_pattern = '\*ku\*'
-
-" Define dictionary.
-let g:neocomplete#sources#dictionary#dictionaries = {
-    \ 'default' : '',
-    \ 'vimshell' : $HOME.'/.vimshell_hist',
-    \ 'scheme' : $HOME.'/.gosh_completions'
-        \ }
-
-" Define keyword.
-if !exists('g:neocomplete#keyword_patterns')
-    let g:neocomplete#keyword_patterns = {}
+if !exists('g:deoplete#sources#omni#input_patterns')
+  let g:deoplete#sources#omni#input_patterns = {}
 endif
-let g:neocomplete#keyword_patterns['default'] = '\h\w*'
+
+let g:deoplete#sources={} 
+let g:deoplete#sources._=['buffer', 'member', 'tag', 'file', 'omni', 'ultisnips'] 
+let g:deoplete#sources#omni#input_patterns.java = '\k\.\k*'
+let g:deoplete#sources#omni#input_patterns.scala = '[^. *\t]\.\w*'
 
 " Plugin key-mappings.
-inoremap <expr><C-g>     neocomplete#undo_completion()
-inoremap <expr><C-l>     neocomplete#complete_common_string()
+inoremap <expr><C-g>     deoplete#undo_completion()
+inoremap <expr><C-l>     deoplete#complete_common_string()
 
 " Recommended key-mappings.
 " <CR>: close popup and save indent.
@@ -399,16 +392,14 @@ function! s:my_cr_function()
   " For no inserting <CR> key.
   return pumvisible() ? "\<C-y>" : "\<CR>"
 endfunction
+
 " <TAB>: completion.
 inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 " <C-h>, <BS>: close popup and delete backword char.
-inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
-inoremap <expr><BS> neocomplete#smart_close_popup()."\<C-h>"
+inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
+inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
 " Close popup by <Space>.
-" inoremap <expr><Space> pumvisible() ? "\<C-y>" : "\<Space>"
-
-" AutoComplPop like behavior.
-let g:neocomplete#enable_auto_select = 1
+inoremap <expr><Space> pumvisible() ? "\<C-y>\<Space>" : "\<Space>"
 
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
@@ -417,25 +408,6 @@ autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType scala setlocal omnifunc=scalacomplete
-
-" Enable heavy omni completion.
-if !exists('g:neocomplete#sources#omni#input_patterns')
-  let g:neocomplete#sources#omni#input_patterns = {}
-endif
-"let g:neocomplete#sources#omni#input_patterns.php = '[^. \t]->\h\w*\|\h\w*::'
-"let g:neocomplete#sources#omni#input_patterns.c = '[^.[:digit:] *\t]\%(\.\|->\)'
-"let g:neocomplete#sources#omni#input_patterns.cpp = '[^.[:digit:] *\t]\%(\.\|->\)\|\h\w*::'
-
-if !exists('g:neocomplete#force_omni_input_patterns')
-  let g:neocomplete#force_omni_input_patterns = {}
-endif
-let g:neocomplete#force_omni_input_patterns.java = '\k\.\k*'
-let g:neocomplete#force_omni_input_patterns.scala = '\k\.\k*'
-
-" For perlomni.vim setting.
-" https://github.com/c9s/perlomni.vim
-let g:neocomplete#sources#omni#input_patterns.perl = '\h\w*->\h\w*\|\h\w*::'
-
 
 " ============================
 " TAGBAR
