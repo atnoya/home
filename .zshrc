@@ -32,7 +32,7 @@ export UPDATE_ZSH_DAYS=5
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-plugins=(git git-flow git-extras gradle gitignore python pip history postgres scala sbt sudo urltools brew cp osx xcode docker zsh-syntax-highlighting battery docker-machine)
+plugins=(git git-flow git-extras gradle gitignore python pip history postgres scala sbt sudo urltools brew cp osx xcode docker zsh-syntax-highlighting battery docker-machine colored-man-pages)
 export JAVA_HOME=`/usr/libexec/java_home`
 
 source $ZSH/oh-my-zsh.sh

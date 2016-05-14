@@ -206,14 +206,21 @@ set shortmess+=r
  
 let xml_use_xhtml=1
 
+" Stop the annoying window popping up when pressing q:
+map q: :q
+
+" ==================================
 " Tabs
+" ==================================
 noremap <Leader>t :badd<Space>
 imap <C-Left> <Esc>:bprev<CR>
 noremap <C-Left> :bprev<CR>
 imap <C-Right> <Esc>:bnext<CR>
 noremap <C-Right> :bnext<CR>
 
+" ==================================
 " Windows
+" ==================================
 nnoremap <Leader>w :split 
 
 " ==================================
@@ -384,9 +391,8 @@ inoremap <expr><C-l>     deoplete#complete_common_string()
 " Recommended key-mappings.
 " <CR>: close popup and save indent.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
+
 function! s:my_cr_function()
-  "return (pumvisible() ? "\<C-y>" : "" ) . "\<CR>"
-  " For no inserting <CR> key.
   return pumvisible() ? "\<C-y>" : "\<CR>"
 endfunction
 
@@ -396,8 +402,8 @@ inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
 inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
 " Close popup by <Space>.
-inoremap <expr><Space> pumvisible() ? "\<C-y>\<Space>" : "\<Space>"
-
+" inoremap <expr><Space> pumvisible() ? "\<C-y>\<Space>" : "\<Space>"
+ 
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
