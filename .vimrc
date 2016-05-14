@@ -1,4 +1,4 @@
-set nocompatible              " be iMproved, required
+set nocompatible
 filetype off                  " required
 
 "set the runtime path to include Vundle and initialize
@@ -36,6 +36,8 @@ Plug 'tpope/vim-repeat'
 Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 
+Plug 'terryma/vim-expand-region'
+
 Plug 'mhinz/vim-signify'
 Plug 'ekalinin/Dockerfile.vim'
 
@@ -53,11 +55,8 @@ Plug 'svermeulen/vim-easyclip'
 Plug 'majutsushi/tagbar'
 
 " Scala
-Plug 'derekwyatt/vim-scala', { 'for': 'scala'}
-Plug 'ensime/ensime-vim', { 'for': 'scala'}
-
-" Worksheets
-Plug 'HerringtonDarkholme/vim-worksheet'
+Plug 'derekwyatt/vim-scala', { 'for': ['scala', 'sbt.scala']}
+Plug 'ensime/ensime-vim', { 'for': ['scala',  'sbt.scala']}
 
 " NERD
 Plug 'scrooloose/nerdtree'
@@ -129,7 +128,6 @@ nnoremap <C-n> :call NumberToggle()<CR>
 
 " Others quick settings for easy editing
 set cursorline
-set ttyfast
 set ruler
 set backspace=eol,start,indent
 set laststatus=2
@@ -137,8 +135,9 @@ set undofile
 set history=10000
 set undoreload=10000
 set shell=/bin/zsh
-set lazyredraw
+" set lazyredraw
 set matchtime=3
+set nostartofline
 set splitbelow splitright
 set ttimeout
 set notimeout
@@ -150,7 +149,8 @@ set foldmethod=marker
 set dictionary=/usr/share/dict/words
 
 set completeopt+=menuone
-set completeopt-=preview
+set completeopt+=noinsert
+" set completeopt-=preview
 
 " wildmenu settings
 set wildmenu
@@ -175,12 +175,12 @@ set tabstop=2
 set shiftwidth=2
 set softtabstop=2
 set expandtab
-set wrap
+set nowrap
 set formatoptions=qrnl
 
 " Setting mapleader
-let mapleader="\\"
-let maplocalleader="§"
+let mapleader="\<space>"
+let maplocalleader="\\"
 
 " Autocomplete and complete
 set complete=.,w,b,u,U,t,i,d
@@ -198,7 +198,6 @@ set sidescrolloff=10
 set virtualedit+=block
 
 " Color settings
-set t_Co=256
 color hybrid_reverse
 
 "Use [RO] for [readonly]
@@ -209,11 +208,10 @@ let xml_use_xhtml=1
 
 " Tabs
 noremap <Leader>t :badd<Space>
-imap <Leader>t <Esc>:badd<Space>
 imap <C-Left> <Esc>:bprev<CR>
-map <C-Left> :bprev<CR>
+noremap <C-Left> :bprev<CR>
 imap <C-Right> <Esc>:bnext<CR>
-map <C-Right> :bnext<CR>
+noremap <C-Right> :bnext<CR>
 
 " Windows
 nnoremap <Leader>w :split 
@@ -253,19 +251,12 @@ endfun
 
 au FileType c,cpp,java,php,ruby,python,.vimrc,md,markdown,scala autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
  
-" make sure vim returns to the same line once you reopen the file
-augroup line_return
-  au!
-  au BufReadPost *
-        \ if line("'\"") > 0 && line("'\"") <= line("$") |
-        \     execute 'normal! g`"zvzz' |
-        \ endif
-augroup END
-
 " ctags setup
 set tags=./.tags,.tags,./tags,tags
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " startify
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " custom indices
   
 let g:startify_bookmarks = [
@@ -288,7 +279,9 @@ let g:startify_skiplist = [
 " use F1 to start startify
 :nmap <F1> :Startify<CR>
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " airline
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#fnamemod = ':t'
 let g:airline_theme='wombat'
@@ -302,12 +295,12 @@ set guifont=Source\ Code\ Pro\ for\ Powerline:12
 
 let g:Powerline_symbols = 'fancy'
 
-set encoding=utf-8
-set t_Co=256
 set fillchars+=stl:\ ,stlnc:\
 set termencoding=utf-8
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " syntastic
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
  
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -317,24 +310,25 @@ let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_scala_checkers = ['ensime']
 let g:syntastic_enable_signs=1
-" Commented out this one, to see warnings
-" let g:syntastic_quiet_messages = {'level': 'warnings'}
-" auto_loc_list below recommended value is 2, but trying 1 for now
 let g:syntastic_auto_loc_list=1
 let g:syntastic_full_redraws=0
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_shell = "/bin/sh"
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-snippets && ultisnips
-imap <Nul> <Space>
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+"imap <Nul> <Space>
 let g:UltiSnipsExpandTrigger="<c-space>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " CtrlP
-map <Leader>e :CtrlPMRU<CR>
-map <Leader><Leader>e :CtrlPBufTag<CR>
-map <Leader><Leader><Leader>e :CtrlPTag<CR>
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+map <Leader>o :CtrlPMRU<CR>
+map <Leader><Leader>o :CtrlPBufTag<CR>
+map <Leader><Leader><Leader>o :CtrlPTag<CR>
 nmap ; :CtrlPBuffer<CR>
 
 " remap default ctrlp setting to leader t
@@ -422,17 +416,22 @@ let g:tagbar_autofocus = 1
 let g:tagbar_autopreview = 1
 let g:tagbar_previewwin_pos = "belowright"
 
-" Ruby
-let g:tagbar_type_ruby = {
-    \ 'kinds' : [
-        \ 'm:modules',
-        \ 'c:classes',
-        \ 'd:describes',
-        \ 'C:contexts',
-        \ 'f:methods',
-        \ 'F:singleton methods'
+let g:tagbar_type_scala = {
+    \ 'ctagstype' : 'scala',
+    \ 'sro'       : '.',
+    \ 'kinds'     : [
+      \ 'p:packages',
+      \ 'T:types:1',
+      \ 't:traits',
+      \ 'o:objects',
+      \ 'O:case objects',
+      \ 'c:classes',
+      \ 'C:case classes',
+      \ 'm:methods',
+      \ 'V:values:1',
+      \ 'v:variables:1'
     \ ]
-    \ }
+\ }
 
 " =====================================
 " FUGITIVE
@@ -445,7 +444,9 @@ map <Leader>gd :Gdiff<CR>
 map <Leader>ge :Gedit<CR>
 map <Leader>gl :Glog<CR>
 
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " NERDTree
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 
 map <F2> :NERDTreeToggle<CR>
 
@@ -453,12 +454,40 @@ map <F2> :NERDTreeToggle<CR>
 " SCALA
 " ====================
 
-" Commenting the autocheck on save for the time being, might be worth to set
-" it back, exploring for now
-" autocmd BufWritePost *.scala :EnTypeCheck
-nnoremap <LocalLeader>t :EnTypeCheck<CR>
-nnoremap <C-B> :EnDeclarationSplit<CR>
-nnoremap <LocalLeader><Space> :EnSuggestImport<CR>
-nnoremap <C-F6> :EnRename<CR>
+autocmd BufWritePost *.scala :EnTypeCheck
+nnoremap <Leader>et :EnTypeCheck<CR>
+nnoremap <Leader>eb :EnDeclarationSplit<CR>
+nnoremap <Leader><CR> :EnSuggestImport<CR>
+nnoremap <Leader><F6> :EnRename<CR>
 nnoremap <Leader><F1> :EnDocBrowse<CR>
-nnoremap <Leader>p :EnInspectType<CR>
+nnoremap <Leader>ep :EnInspectType<CR>
+nnoremap <Leader>eo :EnSearch<Space>
+nnoremap <Leader>ea :EnAddImport<Space>
+
+" ====================
+" Expand Region
+" ====================
+map <C-Up> <Plug>(expand_region_expand)
+map <C-Down> <Plug>(expand_region_shrink)
+
+let g:expand_region_text_objects = {
+      \ 'iw'  :0,
+      \ 'iW'  :0,
+      \ 'i"'  :1,
+      \ 'i''' :1,
+      \ 'i]'  :1, 
+      \ 'ib'  :1, 
+      \ 'iB'  :1, 
+      \ 'il'  :0, 
+      \ 'ip'  :0,
+      \ 'ie'  :0, 
+      \ }
+
+call expand_region#custom_text_objects({
+      \ "\/\\n\\n\<CR>": 0, 
+      \ 'a]' :1, 
+      \ 'ab' :1, 
+      \ 'aB' :1, 
+      \ 'ii' :0, 
+      \ 'ai' :0, 
+      \ })
