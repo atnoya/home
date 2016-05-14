@@ -1,88 +1,79 @@
 set nocompatible              " be iMproved, required
-filetype off                  " required
+" filetype off                  " required
 
 " set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
-call vundle#begin()
+" set rtp+=~/.vim/bundle/Vundle.vim
+call plug#begin('~/.vim/plugged')
 
 " let Vundle manage Vundle, required
-Plugin 'gmarik/Vundle.vim'
+Plug 'gmarik/Vundle.vim'
 
-" Keep Plugin commands between vundle#begin/end.
+" Keep Plug commands between vundle#begin/end.
 " plugin on GitHub repo
-Bundle 'tpope/vim-fugitive'
+Plug 'tpope/vim-fugitive'
 " Useful programming helpers
-Plugin 'L9'
+Plug 'L9'
 " Useful for opening files
-Bundle 'ctrlpvim/ctrlp.vim'
+Plug 'ctrlpvim/ctrlp.vim'
 
-Bundle 'derekprior/vim-colorpack'
-Bundle 'flazz/vim-colorschemes'
+Plug 'derekprior/vim-colorpack'
+Plug 'flazz/vim-colorschemes'
 " Syntax analisys
-Bundle 'scrooloose/syntastic'
+Plug 'scrooloose/syntastic'
 
 " Startup screen
-Bundle 'mhinz/vim-startify'
+Plug 'mhinz/vim-startify'
 
 " Tabs light and status
-Bundle 'vim-airline/vim-airline'
-Plugin 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
 
 " Color schema nice and clean
-Bundle 'reedes/vim-colors-pencil'
+Plug 'reedes/vim-colors-pencil'
 
 " Automatic closing brackets, parenthesis...
-Bundle 'Raimondi/delimitMate'
-Bundle 'tpope/vim-surround'
+Plug 'Raimondi/delimitMate'
+Plug 'tpope/vim-surround'
 
 " Quickness tools
-Bundle 'tpope/vim-repeat'
-Bundle 'tpope/vim-commentary'
+Plug 'tpope/vim-repeat'
+Plug 'tpope/vim-commentary'
 
-Bundle 'godlygeek/tabular'
-Bundle 'mhinz/vim-signify'
-Bundle 'ekalinin/Dockerfile.vim'
+Plug 'godlygeek/tabular'
+Plug 'mhinz/vim-signify'
+Plug 'ekalinin/Dockerfile.vim'
  
 " UltiSnips y vimSnippets
-Bundle 'SirVer/ultisnips'
-Bundle 'honza/vim-snippets'
+Plug 'SirVer/ultisnips'
+Plug 'honza/vim-snippets'
 
 " Easymotion
-Bundle 'Lokaltog/vim-easymotion'
+Plug 'Lokaltog/vim-easymotion'
 
 " Easy clip
-Bundle 'svermeulen/vim-easyclip'
+Plug 'svermeulen/vim-easyclip'
 
 " Tagbar
-Bundle 'majutsushi/tagbar'
+Plug 'majutsushi/tagbar'
 
 " Scala
-Bundle 'derekwyatt/vim-scala'
-Plugin 'ensime/ensime-vim'
+Plug 'derekwyatt/vim-scala'
+Plug 'ensime/ensime-vim'
+
+" Worksheets
+Plug 'HerringtonDarkholme/vim-worksheet'
 
 " NERD
-Bundle 'scrooloose/nerdtree.git'
+Plug 'scrooloose/nerdtree.git'
 
 " BufferGator
-Bundle 'jeetsukumaran/vim-buffergator'
+Plug 'jeetsukumaran/vim-buffergator'
 
 " NeoComplete
-Bundle 'shougo/neocomplete.vim'
+Plug 'shougo/neocomplete.vim'
 
 " All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
-"
-" Brief help
-" :PluginList       - lists configured plugins
-" :PluginInstall    - installs plugins; append `!` to update or just :PluginUpdate
-" :PluginSearch foo - searches for foo; append `!` to refresh local cache
-" :PluginClean      - confirms removal of unused plugins; append `!` to auto-approve removal
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+call plug#end()            " required
 
 " required for vundle and go plugins and a nice settings to have.
 filetype plugin indent on
@@ -317,13 +308,17 @@ set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
 
-let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
-let g:syntastic_scala_checkers = ['ensime', 'scalac']
+let g:syntastic_scala_checkers = ['ensime']
 let g:syntastic_enable_signs=1
-let g:syntastic_quiet_messages = {'level': 'warnings'}
-let g:syntastic_auto_loc_list=2
+" Commented out this one, to see warnings
+" let g:syntastic_quiet_messages = {'level': 'warnings'}
+" auto_loc_list below recommended value is 2, but trying 1 for now
+let g:syntastic_auto_loc_list=1
+let g:syntastic_full_redraws=0
+let g:syntastic_always_populate_loc_list = 1
+let g:syntastic_shell = "/bin/sh"
 
 " vim-snippets && ultisnips
 imap <Nul> <Space>
