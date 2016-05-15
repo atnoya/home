@@ -70,9 +70,6 @@ function! DoRemote(arg)
 endfunction
 Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
 
-" NeoComplete
-Plug 'shougo/neocomplete.vim'
-
 " Other plugins
 Plug 'plasticboy/vim-markdown'
 
@@ -150,7 +147,6 @@ set dictionary=/usr/share/dict/words
 
 set completeopt+=menuone
 set completeopt+=noinsert
-" set completeopt-=preview
 
 " wildmenu settings
 set wildmenu
@@ -325,8 +321,8 @@ let g:syntastic_shell = "/bin/sh"
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-snippets && ultisnips
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
-"imap <Nul> <Space>
-let g:UltiSnipsExpandTrigger="<c-space>"
+imap <Nul> <Space>
+let g:UltiSnipsExpandTrigger="<TAB>"
 let g:UltiSnipsJumpForwardTrigger="<c-b>"
 let g:UltiSnipsJumpBackwardTrigger="<c-z>"
 
@@ -385,6 +381,10 @@ let g:deoplete#sources#omni#input_patterns.java = '\k\.\k*'
 let g:deoplete#sources#omni#input_patterns.scala = '[^. *\t]\.\w*'
 
 " Plugin key-mappings.
+" <TAB>: completion.
+inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+
 inoremap <expr><C-g>     deoplete#undo_completion()
 inoremap <expr><C-l>     deoplete#complete_common_string()
 
@@ -396,21 +396,22 @@ function! s:my_cr_function()
   return pumvisible() ? "\<C-y>" : "\<CR>"
 endfunction
 
-" <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
 " <C-h>, <BS>: close popup and delete backword char.
 inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
 inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
-" Close popup by <Space>.
-" inoremap <expr><Space> pumvisible() ? "\<C-y>\<Space>" : "\<Space>"
- 
+
+" Ctrl-Space for completions. Heck Yeah! 
+inoremap <C-Space> <C-x><C-o>
+imap <buffer> <Nul> <C-Space>
+smap <buffer> <Nul> <C-Space>
+
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-autocmd FileType scala setlocal omnifunc=scalacomplete
+autocmd FileType scala setlocal omnifunc=scalacomplete#CompleteTags
 
 " ============================
 " TAGBAR
