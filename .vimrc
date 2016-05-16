@@ -16,6 +16,8 @@ Plug 'ctrlpvim/ctrlp.vim'
 Plug 'derekprior/vim-colorpack'
 Plug 'flazz/vim-colorschemes'
 " Syntax analisys
+" Neomake should be faster but it doesn't currently work with ensime
+" Plug 'neomake/neomake'
 Plug 'scrooloose/syntastic'
 
 " Startup screen
@@ -304,7 +306,6 @@ set termencoding=utf-8
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 " syntastic
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
- 
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
 set statusline+=%*
