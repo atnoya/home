@@ -1,8 +1,4 @@
-set nocompatible
-filetype off                  " required
-
 "set the runtime path to include Vundle and initialize
-set rtp+=~/.vim/bundle/Vundle.vim
 call plug#begin('~/.vim/plugged')
 
 " Keep Plug commands between vundle#begin/end.
@@ -39,6 +35,7 @@ Plug 'tpope/vim-commentary'
 Plug 'tpope/vim-surround'
 
 Plug 'terryma/vim-expand-region'
+Plug 'rking/ag.vim'
 
 Plug 'mhinz/vim-signify'
 Plug 'ekalinin/Dockerfile.vim'
@@ -57,8 +54,8 @@ Plug 'svermeulen/vim-easyclip'
 Plug 'majutsushi/tagbar'
 
 " Scala
-Plug 'derekwyatt/vim-scala', { 'for': ['scala', 'sbt.scala']}
-Plug 'ensime/ensime-vim', { 'for': ['scala',  'sbt.scala']}
+Plug 'derekwyatt/vim-scala'
+Plug 'ensime/ensime-vim'
 
 " NERD
 Plug 'scrooloose/nerdtree'
@@ -71,9 +68,10 @@ function! DoRemote(arg)
   UpdateRemotePlugins
 endfunction
 Plug 'Shougo/deoplete.nvim', { 'do': function('DoRemote') }
+Plug 'Shougo/echodoc.vim'
 
 " Other plugins
-Plug 'plasticboy/vim-markdown'
+" Plug 'plasticboy/vim-markdown'
 
 " All of your Plugins must be added before the following line
 call plug#end()            " required
@@ -107,9 +105,6 @@ set hidden
 set noerrorbells
 set visualbell
 
-"set t_vb=
-"autocmd VimEnter * set t_vb=
-
 " Line number settings
 function! NumberToggle()
   if(&relativenumber == 1)
@@ -134,7 +129,7 @@ set undofile
 set history=10000
 set undoreload=10000
 set shell=/bin/zsh
-" set lazyredraw
+set lazyredraw
 set matchtime=3
 set nostartofline
 set splitbelow splitright
@@ -148,6 +143,7 @@ set foldmethod=marker
 set dictionary=/usr/share/dict/words
 
 set completeopt+=menuone
+set completeopt+=preview
 set completeopt+=noinsert
 
 " wildmenu settings
@@ -204,6 +200,9 @@ set shortmess+=r
  
 let xml_use_xhtml=1
 
+" Ctags will promtp in case of multiple matching
+set cscopetag
+
 " Stop the annoying window popping up when pressing q:
 map q: :q
 
@@ -239,7 +238,7 @@ au BufRead,BufNewFile *.md setf markdown
 au BufRead,BufNewFile *.markdown setf markdown
   
 au BufRead,BufNewFile *.dockerfile setf Dockerfile
-   
+  
 " MultiMarkdown requires 4-space tabs
 au FileType markdown set sts=4 ts=4 sw=4
      
@@ -257,7 +256,7 @@ endfun
 au FileType c,cpp,java,php,ruby,python,.vimrc,md,markdown,scala autocmd BufWritePre <buffer> :call <SID>StripTrailingWhitespaces()
  
 " ctags setup
-set tags=./.tags,.tags,./tags,tags
+set tags=./.tags;/,.tags;/
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 " startify
@@ -314,18 +313,21 @@ let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
 let g:syntastic_scala_checkers = ['ensime']
 let g:syntastic_enable_signs=1
-let g:syntastic_auto_loc_list=1
+let g:syntastic_auto_loc_list=0
 let g:syntastic_full_redraws=0
 let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_shell = "/bin/sh"
+let g:syntastic_mode_map = {
+        \ "mode": "passive",
+        \ "active_filetypes": [],
+        \ "passive_filetypes": [] }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 " vim-snippets && ultisnips
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
-imap <Nul> <Space>
-let g:UltiSnipsExpandTrigger="<TAB>"
-let g:UltiSnipsJumpForwardTrigger="<c-b>"
-let g:UltiSnipsJumpBackwardTrigger="<c-z>"
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<c-j>"
+let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 " CtrlP
@@ -373,13 +375,18 @@ let g:deoplete#enable_smart_case = 1
 let g:deoplete#enable_auto_select = 1
 
 if !exists('g:deoplete#sources#omni#input_patterns')
-  let g:deoplete#sources#omni#input_patterns = {}
+  let g:deoplete#omni#input_patterns = {}
 endif
 
 let g:deoplete#sources={} 
-let g:deoplete#sources._=['buffer', 'member', 'tag', 'file', 'omni', 'ultisnips'] 
-let g:deoplete#sources#omni#input_patterns.java = '\k\.\k*'
-let g:deoplete#sources#omni#input_patterns.scala = '[^. *\t]\.\w*'
+let g:deoplete#sources._=['buffer', 'member', 'file', 'tag', 'omni', 'ultisnips'] 
+let g:deoplete#omni#input_patterns.java = '\k\.\k*'
+" let g:deoplete#omni#input_patterns.scala = '[^. *\t]\.\w*'
+let g:deoplete#omni#input_patterns.scala = [
+  \ '[^. *\t]\.\w*',
+  \ '[:\[,] ?\w*',
+  \ '^import .*'
+  \]
 
 " Plugin key-mappings.
 " <TAB>: completion.
@@ -401,18 +408,15 @@ endfunction
 inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
 inoremap <expr><BS> deoplete#mappings#smart_close_popup()."\<C-h>"
 
-" Ctrl-Space for completions. Heck Yeah! 
-inoremap <C-Space> <C-x><C-o>
-imap <buffer> <Nul> <C-Space>
-smap <buffer> <Nul> <C-Space>
-
 " Enable omni completion.
 autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
 autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
 autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-autocmd FileType scala setlocal omnifunc=scalacomplete#CompleteTags
+" autocmd FileType scala setlocal omnifunc=scalacomplete#CompleteTags
+" au filetype {java,scala} setlocal omnifunc=javacomplete#Complete
+" au filetype scala set omnifunc=EnCompleteFunc
 
 " ============================
 " TAGBAR
@@ -463,8 +467,9 @@ map <F2> :NERDTreeToggle<CR>
 " ====================
 
 autocmd BufWritePost *.scala :EnTypeCheck
+" autocmd BufWritePost *.scala :NeomakeFile
 nnoremap <Leader>et :EnTypeCheck<CR>
-nnoremap <Leader>eb :EnDeclarationSplit<CR>
+nnoremap <Leader>eb :EnDeclarationSplit v<CR>
 nnoremap <Leader><CR> :EnSuggestImport<CR>
 nnoremap <Leader><F6> :EnRename<CR>
 nnoremap <Leader><F1> :EnDocBrowse<CR>
@@ -499,3 +504,9 @@ call expand_region#custom_text_objects({
       \ 'ii' :0, 
       \ 'ai' :0, 
       \ })
+
+" ======================
+" Markdown
+" ======================
+
+let g:vim_markdown_folding_level = 3

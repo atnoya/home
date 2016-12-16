@@ -13,8 +13,10 @@ ZSH=$HOME/.oh-my-zsh
 ZSH_THEME="nanotech"
 
 # Example aliases
-alias zshconfig="nvim ~/.zshrc"
-alias ohmyzsh="nvim ~/.oh-my-zsh"
+alias vi='nvim'
+alias vim='nvim'
+alias zshconfig="vi ~/.zshrc"
+alias ohmyzsh="vi ~/.oh-my-zsh"
 
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
@@ -46,7 +48,7 @@ export MANPATH="/usr/local/man:$MANPATH"
 if [[ -n $SSH_CONNECTION ]]; then
   export EDITOR='vim'
 else
-  export EDITOR='nvim'
+  export EDITOR='vim'
 fi
 
 # ssh
