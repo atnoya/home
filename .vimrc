@@ -55,13 +55,17 @@ Plug 'majutsushi/tagbar'
 
 " Scala
 Plug 'derekwyatt/vim-scala'
-Plug 'ensime/ensime-vim'
+" Plug 'ensime/ensime-vim'
 
 " NERD
 Plug 'scrooloose/nerdtree'
 
 " BufferGator
 Plug 'jeetsukumaran/vim-buffergator'
+
+set rtp+=/usr/local/opt/fzf
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
 
 " Deoplete for neovim
 function! DoRemote(arg)
@@ -192,7 +196,7 @@ set sidescrolloff=10
 set virtualedit+=block
 
 " Color settings
-color hybrid_reverse
+color seoul256
 
 "Use [RO] for [readonly]
 set shortmess-=atI
@@ -466,16 +470,19 @@ map <F2> :NERDTreeToggle<CR>
 " SCALA
 " ====================
 
-autocmd BufWritePost *.scala :EnTypeCheck
+" Temporary hack to get it working with the version 1
+" let ensime_server_v2=1
+
+" autocmd BufWritePost *.scala :EnTypeCheck
 " autocmd BufWritePost *.scala :NeomakeFile
-nnoremap <Leader>et :EnTypeCheck<CR>
-nnoremap <Leader>eb :EnDeclarationSplit v<CR>
-nnoremap <Leader><CR> :EnSuggestImport<CR>
-nnoremap <Leader><F6> :EnRename<CR>
-nnoremap <Leader><F1> :EnDocBrowse<CR>
-nnoremap <Leader>ep :EnInspectType<CR>
-nnoremap <Leader>eo :EnSearch<Space>
-nnoremap <Leader>ea :EnAddImport<Space>
+" nnoremap <Leader>et :EnTypeCheck<CR>
+" nnoremap <Leader>eb :EnDeclarationSplit v<CR>
+" nnoremap <Leader><CR> :EnSuggestImport<CR>
+" nnoremap <Leader><F6> :EnRename<CR>
+" nnoremap <Leader><F1> :EnDocBrowse<CR>
+" nnoremap <Leader>ep :EnInspectType<CR>
+" nnoremap <Leader>eo :EnSearch<Space>
+" nnoremap <Leader>ea :EnAddImport<Space>
 
 " ====================
 " Expand Region

@@ -56,3 +56,13 @@ export SSH_KEY_PATH="~/.ssh/rsa_id"
 
 fpath=(/usr/local/share/zsh-completions $fpath)
 source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+fpath=(/usr/local/share/oh-my-stups $fpath)
+
+# enable autocomplete function
+autoload -U compinit
+compinit
+
+# FZF 
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
