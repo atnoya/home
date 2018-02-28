@@ -4,10 +4,9 @@ call plug#begin('~/.vim/plugged')
 " Keep Plug commands between vundle#begin/end.
 " plugin on GitHub repo
 Plug 'tpope/vim-fugitive'
-" Useful programming helpers
-Plug 'L9'
 " Useful for opening files
 Plug 'ctrlpvim/ctrlp.vim'
+Plug 'FelikZ/ctrlp-py-matcher'
 
 Plug 'derekprior/vim-colorpack'
 Plug 'flazz/vim-colorschemes'
@@ -28,6 +27,9 @@ Plug 'reedes/vim-colors-pencil'
 
 " Automatic closing brackets, parenthesis...
 Plug 'Raimondi/delimitMate'
+
+" Adding text targets
+Plug 'wellle/targets.vim'
 
 " Quickness tools
 Plug 'tpope/vim-repeat'
@@ -57,14 +59,19 @@ Plug 'majutsushi/tagbar'
 Plug 'derekwyatt/vim-scala'
 " Plug 'ensime/ensime-vim'
 
+" LSP
+Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
+Plug 'Shougo/echodoc.vim'
+
+Plug 'rizzatti/dash.vim'
 " NERD
 Plug 'scrooloose/nerdtree'
 
 " BufferGator
 Plug 'jeetsukumaran/vim-buffergator'
 
-set rtp+=/usr/local/opt/fzf
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+" FZF
+Plug '/usr/local/opt/fzf'
 Plug 'junegunn/fzf.vim'
 
 " Deoplete for neovim
@@ -164,6 +171,7 @@ set wildignore+=.jar
 set wildignore+=.swp
 set wildignore+=*/build/*
 set wildignore+=*/node_modules/*
+set wildignore+=*/target/*
 
 " allows using the repeat operation with visual selection
 vnoremap . :normal .<CR>
@@ -194,9 +202,13 @@ set scrolloff=3
 set sidescroll=1
 set sidescrolloff=10
 set virtualedit+=block
+set noshowmode
 
 " Color settings
-color seoul256
+color jellybeans
+
+" Search highlight settings
+hi Search ctermfg=white ctermbg=darkblue
 
 "Use [RO] for [readonly]
 set shortmess-=atI
@@ -209,6 +221,11 @@ set cscopetag
 
 " Stop the annoying window popping up when pressing q:
 map q: :q
+
+" Allows for inserting a new line without entering insert mode using CR for
+" new line and Shift + CR for a new line above
+nmap <S-CR> O<Esc>j
+nmap <CR> o<Esc>
 
 " ==================================
 " Tabs
@@ -292,7 +309,7 @@ let g:startify_skiplist = [
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 let g:airline#extensions#tabline#enabled=1
 let g:airline#extensions#tabline#fnamemod = ':t'
-let g:airline_theme='wombat'
+let g:airline_theme='jellybeans'
 " molokai, jellybeans, powerlineish, wombat, luna
 let g:airline_powerline_fonts = 1
 let g:airline_enable_branch     = 1
@@ -315,7 +332,7 @@ set statusline+=%*
 
 let g:syntastic_check_on_open = 0
 let g:syntastic_check_on_wq = 0
-let g:syntastic_scala_checkers = ['ensime']
+" let g:syntastic_scala_checkers = ['ensime']
 let g:syntastic_enable_signs=1
 let g:syntastic_auto_loc_list=0
 let g:syntastic_full_redraws=0
@@ -334,41 +351,56 @@ let g:UltiSnipsJumpForwardTrigger="<c-j>"
 let g:UltiSnipsJumpBackwardTrigger="<c-k>"
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
+" FZF
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
+function! s:build_buffer_list()
+  call fzf#run({'source': map(range(1, bufnr('$')), 'bufname(v:val)'), 'sink': 'e', 'down': '30%'})
+  copen
+  cc
+endfunction
+
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-x': 'split',
+  \ 'ctrl-v': 'vsplit' }
+
+map <silent> <Leader>\ :FZF<CR>
+map <silent> <Leader><Leader>b :Buffers<CR>
+map <silent> <Leader><Leader>h :History<CR>
+
+
+"""""""""""""""""""""""""""""""""""""""""""""""""""""""
 " CtrlP
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 map <Leader>o :CtrlPMRU<CR>
 map <Leader><Leader>o :CtrlPBufTag<CR>
-map <Leader><Leader><Leader>o :CtrlPTag<CR>
 nmap ; :CtrlPBuffer<CR>
 
 " remap default ctrlp setting to leader t
 let g:ctrlp_working_path_mode='ra'
-let g:ctrlp_clear_cache_on_exit=0
+let g:ctrlp_clear_cache_on_exit=1
 let g:ctrlp_show_hidden=1
 let g:ctrlp_mruf_max=500
   
-let g:ctrlp_match_window_bottom = 0
-let g:ctrlp_match_window_reversed = 0
+let g:ctrlp_match_window_bottom = 1
+let g:ctrlp_match_window_reversed = 1
   
 let g:ctrlp_custom_ignore = {
-  \ 'dir': '\v[\/]\.(git|hg|svn|idea|cache)$|tmp|temp',
+  \ 'dir': '\v[\/]\.(git|hg|svn|idea|cache|ensime)$|tmp|temp|target',
   \ 'file': '\v\~$|\.(o|swp|class|pyc|wav|un~|mp3|ogg|blend|DS_Store)'
   \ }
-  
-let g:ctrlp_user_command={
-  \ 'types': {
-  \ 1: ['.git', 'cd %s && git ls-files'],
-  \ 2: ['.hg', 'hg --cwd %s locate -I .'],
-  \ },
-  \ 'fallback': 'find %s -type f'
-  \ }
+
+
+let g:ctrlp_user_command = 'ag %s -l --nocolor -g "" --ignore "target/*"'
+let g:ctrlp_root_markers = ['.git']
                                        
 let g:ctrlp_reuse_window = 'startify'
                                           
-let g:ctrlp_working_path_mode = 0
 let g:ctrlp_dotfiles = 0
 let g:ctrlp_switch_buffer = 1
 let g:ctrlp_extensions = ['tag', 'buffertag', 'mixed']
+
+let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Deoplete
@@ -384,13 +416,12 @@ endif
 
 let g:deoplete#sources={} 
 let g:deoplete#sources._=['buffer', 'member', 'file', 'tag', 'omni', 'ultisnips'] 
-let g:deoplete#omni#input_patterns.java = '\k\.\k*'
-" let g:deoplete#omni#input_patterns.scala = '[^. *\t]\.\w*'
-let g:deoplete#omni#input_patterns.scala = [
-  \ '[^. *\t]\.\w*',
-  \ '[:\[,] ?\w*',
-  \ '^import .*'
-  \]
+" let g:deoplete#omni#input_patterns.java = '\k\.\k*'
+" let g:deoplete#omni#input_patterns.scala = [
+"   \ '[^. *\t]\.\w*',
+"   \ '[:\[,] ?\w*',
+"   \ '^import .*'
+"   \]
 
 " Plugin key-mappings.
 " <TAB>: completion.
@@ -419,6 +450,7 @@ autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 " autocmd FileType scala setlocal omnifunc=scalacomplete#CompleteTags
+autocmd FileType scala set omnifunc=LanguageClient#complete
 " au filetype {java,scala} setlocal omnifunc=javacomplete#Complete
 " au filetype scala set omnifunc=EnCompleteFunc
 
@@ -426,7 +458,7 @@ autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 " TAGBAR
 " ============================
 
-nmap <F8> :TagbarToggle<CR>
+nmap <F8> :TagbarOpenAutoClose<CR>
 
 let g:tagbar_autofocus = 1
 let g:tagbar_autopreview = 1
@@ -467,7 +499,7 @@ map <Leader>gl :Glog<CR>
 map <F2> :NERDTreeToggle<CR>
 
 " ====================
-" SCALA
+" ENSIME
 " ====================
 
 " Temporary hack to get it working with the version 1
@@ -485,21 +517,56 @@ map <F2> :NERDTreeToggle<CR>
 " nnoremap <Leader>ea :EnAddImport<Space>
 
 " ====================
+" LSP
+" ====================
+set signcolumn=yes
+ 
+let g:LanguageClient_autoStart = 1
+let g:LanguageClient_selectionUI="fzf" 
+let g:LanguageClient_serverCommands = {
+    \ 'scala': ['node', expand('~/scripts/sbt-server-stdio.js')]
+    \ }
+ 
+nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
+nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
+nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()<CR>
+
+" ====================
 " Expand Region
 " ====================
-map <C-Up> <Plug>(expand_region_expand)
-map <C-Down> <Plug>(expand_region_shrink)
+map <C-j> <Plug>(expand_region_expand)
+map <C-k> <Plug>(expand_region_shrink)
+
+let g:expand_region_use_select_mode = 1
 
 let g:expand_region_text_objects = {
       \ 'iw'  :0,
       \ 'iW'  :0,
-      \ 'i"'  :1,
-      \ 'i''' :1,
-      \ 'i]'  :1, 
+      \ 'i"'  :0,
+      \ 'i''' :0,
       \ 'ib'  :1, 
-      \ 'iB'  :1, 
+      \ 'i]'  :1,
+      \ 'iB'  :1,
       \ 'il'  :0, 
       \ 'ip'  :0,
+      \ 'ie'  :0, 
+      \ }
+let g:expand_region_text_objects_scala = {
+      \ 'iw'  :0,
+      \ 'iW'  :0,
+      \ 'i"'  :0,
+      \ 'i''' :0,
+      \ 'ia'  :1,
+      \ 'ib'  :1, 
+      \ 'ab'  :1, 
+      \ 'i]'  :1,
+      \ 'a]'  :1,
+      \ 'iB'  :1,
+      \ 'aB'  :1,
+      \ 'im'  :1, 
+      \ 'am'  :1,
+      \ 'il'  :0, 
+      \ 'ip'  :1,
       \ 'ie'  :0, 
       \ }
 
@@ -517,3 +584,9 @@ call expand_region#custom_text_objects({
 " ======================
 
 let g:vim_markdown_folding_level = 3
+
+" ======================
+" Dash
+" ======================
+:nmap <silent> <leader>d <Plug>DashSearch
+
