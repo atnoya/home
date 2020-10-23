@@ -3,3 +3,9 @@
 *.un~
 .tags*
 *#*#
+.vscode/
+.metals/
+.bloop/
+.bsp/
+local.sbt
+metals.sbt

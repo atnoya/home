@@ -1,12 +1,14 @@
 "set the runtime path to include Vundle and initialize
+if empty(glob('~/.vim/autoload/plug.vim'))
+  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
+    \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
 call plug#begin('~/.vim/plugged')
 
 " Keep Plug commands between vundle#begin/end.
 " plugin on GitHub repo
 Plug 'tpope/vim-fugitive'
-" Useful for opening files
-Plug 'ctrlpvim/ctrlp.vim'
-Plug 'FelikZ/ctrlp-py-matcher'
 
 Plug 'derekprior/vim-colorpack'
 Plug 'flazz/vim-colorschemes'
@@ -57,10 +59,9 @@ Plug 'majutsushi/tagbar'
 
 " Scala
 Plug 'derekwyatt/vim-scala'
-" Plug 'ensime/ensime-vim'
+Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 
 " LSP
-Plug 'autozimu/LanguageClient-neovim', { 'do': ':UpdateRemotePlugins' }
 Plug 'Shougo/echodoc.vim'
 
 Plug 'rizzatti/dash.vim'
@@ -368,40 +369,6 @@ map <silent> <Leader>\ :FZF<CR>
 map <silent> <Leader><Leader>b :Buffers<CR>
 map <silent> <Leader><Leader>h :History<CR>
 
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-" CtrlP
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""
-map <Leader>o :CtrlPMRU<CR>
-map <Leader><Leader>o :CtrlPBufTag<CR>
-nmap ; :CtrlPBuffer<CR>
-
-" remap default ctrlp setting to leader t
-let g:ctrlp_working_path_mode='ra'
-let g:ctrlp_clear_cache_on_exit=1
-let g:ctrlp_show_hidden=1
-let g:ctrlp_mruf_max=500
-  
-let g:ctrlp_match_window_bottom = 1
-let g:ctrlp_match_window_reversed = 1
-  
-let g:ctrlp_custom_ignore = {
-  \ 'dir': '\v[\/]\.(git|hg|svn|idea|cache|ensime)$|tmp|temp|target',
-  \ 'file': '\v\~$|\.(o|swp|class|pyc|wav|un~|mp3|ogg|blend|DS_Store)'
-  \ }
-
-
-let g:ctrlp_user_command = 'ag %s -l --nocolor -g "" --ignore "target/*"'
-let g:ctrlp_root_markers = ['.git']
-                                       
-let g:ctrlp_reuse_window = 'startify'
-                                          
-let g:ctrlp_dotfiles = 0
-let g:ctrlp_switch_buffer = 1
-let g:ctrlp_extensions = ['tag', 'buffertag', 'mixed']
-
-let g:ctrlp_match_func = { 'match': 'pymatcher#PyMatch' }
-
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
 " Deoplete
 """""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -425,8 +392,8 @@ let g:deoplete#sources._=['buffer', 'member', 'file', 'tag', 'omni', 'ultisnips'
 
 " Plugin key-mappings.
 " <TAB>: completion.
-inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
+" inoremap <expr><TAB>  pumvisible() ? "\<C-n>" : "\<TAB>"
+" inoremap <expr><S-TAB>  pumvisible() ? "\<C-p>" : "\<TAB>"
 
 inoremap <expr><C-g>     deoplete#undo_completion()
 inoremap <expr><C-l>     deoplete#complete_common_string()
@@ -435,9 +402,9 @@ inoremap <expr><C-l>     deoplete#complete_common_string()
 " <CR>: close popup and save indent.
 inoremap <silent> <CR> <C-r>=<SID>my_cr_function()<CR>
 
-function! s:my_cr_function()
-  return pumvisible() ? "\<C-y>" : "\<CR>"
-endfunction
+" function! s:my_cr_function()
+  " return pumvisible() ? "\<C-y>" : "\<CR>"
+" endfunction
 
 " <C-h>, <BS>: close popup and delete backword char.
 inoremap <expr><C-h> deoplete#mappings#smart_close_popup()."\<C-h>"
@@ -499,39 +466,6 @@ map <Leader>gl :Glog<CR>
 map <F2> :NERDTreeToggle<CR>
 
 " ====================
-" ENSIME
-" ====================
-
-" Temporary hack to get it working with the version 1
-" let ensime_server_v2=1
-
-" autocmd BufWritePost *.scala :EnTypeCheck
-" autocmd BufWritePost *.scala :NeomakeFile
-" nnoremap <Leader>et :EnTypeCheck<CR>
-" nnoremap <Leader>eb :EnDeclarationSplit v<CR>
-" nnoremap <Leader><CR> :EnSuggestImport<CR>
-" nnoremap <Leader><F6> :EnRename<CR>
-" nnoremap <Leader><F1> :EnDocBrowse<CR>
-" nnoremap <Leader>ep :EnInspectType<CR>
-" nnoremap <Leader>eo :EnSearch<Space>
-" nnoremap <Leader>ea :EnAddImport<Space>
-
-" ====================
-" LSP
-" ====================
-set signcolumn=yes
- 
-let g:LanguageClient_autoStart = 1
-let g:LanguageClient_selectionUI="fzf" 
-let g:LanguageClient_serverCommands = {
-    \ 'scala': ['node', expand('~/scripts/sbt-server-stdio.js')]
-    \ }
- 
-nnoremap <silent> K :call LanguageClient_textDocument_hover()<CR>
-nnoremap <silent> gd :call LanguageClient_textDocument_definition()<CR>
-nnoremap <silent> <F2> :call LanguageClient_textDocument_rename()<CR>
-
-" ====================
 " Expand Region
 " ====================
 map <C-j> <Plug>(expand_region_expand)
@@ -590,3 +524,76 @@ let g:vim_markdown_folding_level = 3
 " ======================
 :nmap <silent> <leader>d <Plug>DashSearch
 
+" ======================
+" COC
+" ======================
+" Configuration for coc.nvim
+
+" Smaller updatetime for CursorHold & CursorHoldI
+set updatetime=300
+
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+
+" always show signcolumns
+set signcolumn=yes
+
+" Some server have issues with backup files, see #649
+set nobackup
+set nowritebackup
+
+" Better display for messages
+set cmdheight=2
+
+" Use <c-space> for trigger completion.
+inoremap <silent><expr> <c-space> coc#refresh()
+
+" Use <cr> for confirm completion, `<C-g>u` means break undo chain at current position.
+" Coc only does snippet and additional edit on confirm.
+inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<C-g>u\<CR>"
+
+" Use `[c` and `]c` for navigate diagnostics
+nmap <silent> [c <Plug>(coc-diagnostic-prev)
+nmap <silent> ]c <Plug>(coc-diagnostic-next)
+
+" Remap keys for gotos
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Remap for do codeAction of current line
+nmap <leader>ac <Plug>(coc-codeaction)
+
+" Remap for do action format
+nnoremap <silent> F :call CocAction('format')<CR>
+
+" Use K for show documentation in preview window
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if &filetype == 'vim'
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+
+" Highlight symbol under cursor on CursorHold
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Remap for rename current word
+nmap <leader>rn <Plug>(coc-rename)
+
+" Show all diagnostics
+nnoremap <silent> <space>a  :<C-u>CocList diagnostics<cr>
+" Find symbol of current document
+nnoremap <silent> <space>o  :<C-u>CocList outline<cr>
+" Search workspace symbols
+nnoremap <silent> <space>s  :<C-u>CocList -I symbols<cr>
+" Do default action for next item.
+nnoremap <silent> <space>j  :<C-u>CocNext<CR>
+" Do default action for previous item.
+nnoremap <silent> <space>k  :<C-u>CocPrev<CR>
+" Resume latest coc list
+nnoremap <silent> <space>p  :<C-u>CocListResume<CR>

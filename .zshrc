@@ -17,6 +17,7 @@ alias vi='nvim'
 alias vim='nvim'
 alias zshconfig="vi ~/.zshrc"
 alias ohmyzsh="vi ~/.oh-my-zsh"
+alias k=kubectl
 
 # Set to this to use case-sensitive completion
 # CASE_SENSITIVE="true"
@@ -34,8 +35,8 @@ export UPDATE_ZSH_DAYS=5
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-plugins=(git git-flow git-extras gradle gitignore python pip history postgres scala sbt sudo urltools brew cp osx xcode docker zsh-syntax-highlighting battery docker-machine colored-man-pages)
-export JAVA_HOME=`/usr/libexec/java_home`
+plugins=(git git-flow git-extras gradle gitignore python pip history postgres scala sbt sudo urltools brew cp osx xcode docker battery docker-machine colored-man-pages vi-mode kubectl)
+export JAVA_HOME=`/usr/libexec/java_home -v 11`
 
 source $ZSH/oh-my-zsh.sh
 
@@ -68,3 +69,14 @@ compinit
 export FZF_DEFAULT_OPTS='--height 40% --reverse --border'
 # export FZF_DEFAULT_COMMAND='ag %s -l -g "" --ignore "target/*"'
 export FZF_DEFAULT_COMMAND='rg --files --no-ignore --hidden --follow --glob "!.git/*"'
+
+# OKTA AWS
+#OktaAWSCLI
+if [[ -f "$HOME/.okta/bash_functions" ]]; then
+    . "$HOME/.okta/bash_functions"
+fi
+if [[ -d "$HOME/.okta/bin" && ":$PATH:" != *":$HOME/.okta/bin:"* ]]; then
+    PATH="$HOME/.okta/bin:$PATH"
+fi
+
+export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
