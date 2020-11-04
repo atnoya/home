@@ -36,7 +36,6 @@ export UPDATE_ZSH_DAYS=5
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 plugins=(git git-flow git-extras gradle gitignore python pip history postgres scala sbt sudo urltools brew cp osx xcode docker battery docker-machine colored-man-pages vi-mode kubectl)
-export JAVA_HOME=`/usr/libexec/java_home -v 11`
 
 source $ZSH/oh-my-zsh.sh
 
@@ -80,3 +79,7 @@ if [[ -d "$HOME/.okta/bin" && ":$PATH:" != *":$HOME/.okta/bin:"* ]]; then
 fi
 
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
+
+#THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
+export SDKMAN_DIR="/Users/atubiono/.sdkman"
+[[ -s "/Users/atubiono/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/atubiono/.sdkman/bin/sdkman-init.sh"
