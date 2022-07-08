@@ -11,6 +11,7 @@ ZSH=$HOME/.oh-my-zsh
 # Optionally, if you set this to "random", it'll load a random theme each
 # time that oh-my-zsh is loaded.
 ZSH_THEME="nanotech"
+# ZSH_THEME="gnzh"
 
 # Example aliases
 alias vi='nvim'
@@ -35,13 +36,12 @@ export UPDATE_ZSH_DAYS=5
 
 # Which plugins would you like to load? (plugins can be found in ~/.oh-my-zsh/plugins/*)
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
-plugins=(git git-flow git-extras gradle gitignore python pip history postgres scala sbt sudo urltools brew cp osx xcode docker battery docker-machine colored-man-pages vi-mode kubectl)
+plugins=(git git-flow git-extras gradle gitignore python pip history postgres scala sbt sudo urltools brew cp osx xcode docker battery docker-machine colored-man-pages vi-mode kubectl terraform helm)
 
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
-
-export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin"
+export PATH="$PATH:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/bin:/usr/local/git/bin:~/.local/bin"
 export MANPATH="/usr/local/man:$MANPATH"
 
 # Preferred editor for local and remote sessions
@@ -83,3 +83,11 @@ export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 #THIS MUST BE AT THE END OF THE FILE FOR SDKMAN TO WORK!!!
 export SDKMAN_DIR="/Users/atubiono/.sdkman"
 [[ -s "/Users/atubiono/.sdkman/bin/sdkman-init.sh" ]] && source "/Users/atubiono/.sdkman/bin/sdkman-init.sh"
+
+
+#KUBE PS1 - Extra info on propmt
+source "/usr/local/opt/kube-ps1/share/kube-ps1.sh"
+export KUBE_PS1_PREFIX=''
+export KUBE_PS1_SUFFIX=' >> '
+export KUBE_PS1_SEPARATOR=' '
+PS1='$(kube_ps1)'$PS1

@@ -9,3 +9,6 @@
 .bsp/
 local.sbt
 metals.sbt
+package.json
+package-lock.json
+*.code-workspace
